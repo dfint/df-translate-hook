@@ -17,7 +17,7 @@
 
 	SETUP_ORIG_FUNC(addcoloredst, 0x5E5620);
 	SETUP_ORIG_FUNC(addst, 0x5e56a0);
-	void __fastcall h(addcoloredst)(char* gps, DWORD EDX, char* str, const char* colorstr)
+	void __fastcall h(addcoloredst)(graphicst_* gps, DWORD EDX, char* str, const char* colorstr)
 	{
 		string_ string;
 		unsigned int slen = strlen(str);
@@ -32,11 +32,11 @@
 			memcpy(string.buf, str, 16);
 		}
 
-		gps[8] = (colorstr[0] & 7);
-		gps[9] = ((colorstr[0] & 56)) >> 3;
-		gps[10] = ((colorstr[0] & 64)) >> 6;
+		gps->screenf = (colorstr[0] & 7);
+		gps->screenb = ((colorstr[0] & 56)) >> 3;
+		gps->screenbright = ((colorstr[0] & 64)) >> 6;
 
-		o(addst)(gps, (char*)&string, 0, 0);
+		o(addst)(gps, &string, 0, 0);
 	}
 
 	SETUP_ORIG_FUNC(clear_, 0x5A770);
@@ -186,6 +186,28 @@
 			Size = strlen(text);
 		}
 		return o(append)(Src, EDX, text, Size);
+	}
+
+	SETUP_ORIG_FUNC_FNAME(TTF_RenderUNICODE_Blended, SDL_ttf.dll);
+	char* h(TTF_RenderUNICODE_Blended)(char* font, uint16_t* text, SDL_Color fg) {
+		uint16_t* x = ChangeText(text);
+		if (x) {
+			return o(TTF_RenderUNICODE_Blended)(font, x, fg);
+		}
+		else {
+			return o(TTF_RenderUNICODE_Blended)(font, text, fg);
+		}
+	}
+
+	SETUP_ORIG_FUNC_FNAME(TTF_SizeUNICODE, SDL_ttf.dll);
+	int h(TTF_SizeUNICODE)(char* font, uint16_t* text, int* width, int* height) {
+		uint16_t* x = ChangeText(text);
+		if (x) {
+			return o(TTF_SizeUNICODE)(font, x, width, height);
+		}
+		else {
+			return o(TTF_SizeUNICODE)(font, text, width, height);
+		}
 	}
 #elif defined _M_X64
 	SETUP_ORIG_FUNC(strncpyP, 0xC780);
@@ -357,7 +379,12 @@
 	SETUP_ORIG_FUNC_FNAME(TTF_RenderUNICODE_Blended, SDL_ttf.dll);
 	char* h(TTF_RenderUNICODE_Blended)(char* font, uint16_t* text, SDL_Color fg) {
 		uint16_t* x = ChangeText(text);
-		return o(TTF_RenderUNICODE_Blended)(font, x, fg);
+		if (x) {
+			return o(TTF_RenderUNICODE_Blended)(font, x, fg);
+		}
+		else {
+			return o(TTF_RenderUNICODE_Blended)(font, text, fg);
+		}
 	}
 
 #endif // _M_IX86
@@ -669,7 +696,7 @@ void AttachFunctions()
 	ATTACH(append);
 
 	ATTACH(standardstringentry);
-	printf("%p\n", o(standardstringentry));
+	
 
 	ATTACH(simplify_string);
 	ATTACH(lower_case_string);
@@ -677,9 +704,14 @@ void AttachFunctions()
 	ATTACH(capitalize_string_words);
 	ATTACH(capitalize_string_first_word);
 
+	ATTACH(TTF_RenderUNICODE_Blended);
+	printf("%p\n", o(TTF_RenderUNICODE_Blended));
+	//ATTACH(TTF_SizeUNICODE);
+	//printf("%p\n", o(TTF_SizeUNICODE));
+
+
 #ifdef _M_X64
 	ATTACH(addcoloredst_inline);
-	ATTACH(append);
 #endif // _M_X64
 }
 

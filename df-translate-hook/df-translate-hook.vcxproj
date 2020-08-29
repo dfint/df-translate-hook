@@ -46,7 +46,7 @@
     <ConfigurationType>DynamicLibrary</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
     <PlatformToolset>v142</PlatformToolset>
-    <CharacterSet>Unicode</CharacterSet>
+    <CharacterSet>MultiByte</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug64|Win32'" Label="Configuration">
     <ConfigurationType>DynamicLibrary</ConfigurationType>
@@ -126,6 +126,7 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <LinkIncremental>true</LinkIncremental>
+    <IncludePath>D:\_Runtime\Python\include;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug64|Win32'">
     <LinkIncremental>true</LinkIncremental>
@@ -138,6 +139,9 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>false</LinkIncremental>
+    <ReferencePath>$(ReferencePath)</ReferencePath>
+    <IncludePath>D:\_Runtime\Python32\include;$(IncludePath)</IncludePath>
+    <LibraryPath>D:\_Runtime\Python32\libs;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release64|Win32'">
     <LinkIncremental>false</LinkIncremental>
@@ -147,6 +151,8 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release64|x64'">
     <LinkIncremental>false</LinkIncremental>
+    <IncludePath>D:\_Runtime\Python\include;$(IncludePath)</IncludePath>
+    <LibraryPath>D:\_Runtime\Python\libs;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -293,6 +299,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="changetext.h" />
     <ClInclude Include="csv_reader.h" />
     <ClInclude Include="detours.h" />
     <ClInclude Include="framework.h" />
@@ -302,6 +309,7 @@
     <ClInclude Include="pch.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="changetext.cpp" />
     <ClCompile Include="dllmain.cpp" />
     <ClCompile Include="hooked_functions.cpp" />
     <ClCompile Include="hook_helper.cpp" />
